@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"iam-service/internal/auth"
@@ -32,6 +33,32 @@ func NewRouter(cfg config.Config, db *storage.DB) http.Handler {
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))
+	})
+
+	return mux
+}
+
+// FIXME смержить два route
+func NewRouter2(
+	adminHandler *handlers.AdminHandler,
+	analyticsHandler *handlers.AnalyticsHandler,
+) http.Handler {
+	mux := http.NewServeMux()
+
+	// Эндпоинты аналитики - ТОЛЬКО ДЛЯ АДМИНА
+	mux.HandleFunc("GET /api/admin/analytics/dashboard", analyticsHandler.GetDashboardStats)
+
+	// Эндпоинты управления пользователями - ТОЛЬКО ДЛЯ АДМИНА
+	mux.HandleFunc("GET /api/admin/users", adminHandler.GetUsers)
+	mux.HandleFunc("GET /api/admin/users/{id}", adminHandler.GetUserByID)
+	mux.HandleFunc("PUT /api/admin/users/{id}", adminHandler.UpdateUser)
+	mux.HandleFunc("PATCH /api/admin/users/{id}/role", adminHandler.ChangeUserRole)
+	mux.HandleFunc("PATCH /api/admin/users/{id}/status", adminHandler.ChangeUserStatus)
+
+	// Health check
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	})
 
 	return mux
