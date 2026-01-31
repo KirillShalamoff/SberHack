@@ -55,7 +55,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   };
 
   const handleDetails = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Останавливаем всплытие события
+    e.stopPropagation();
     openModal();
   };
 
@@ -91,23 +91,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     );
   };
 
-  // Получение цвета статуса
   const getStatusColor = () => {
     switch (status) {
       case "recruiting":
-        return "#10B981"; // green
+        return "#10B981";
       case "in_progress":
-        return "#3B82F6"; // blue
+        return "#3B82F6";
       case "completed":
-        return "#6B7280"; // gray
+        return "#6B7280";
       case "archived":
-        return "#9CA3AF"; // light gray
+        return "#9CA3AF";
       default:
         return "#6B7280";
     }
   };
 
-  // Получение текста статуса
   const getStatusText = () => {
     switch (status) {
       case "recruiting":

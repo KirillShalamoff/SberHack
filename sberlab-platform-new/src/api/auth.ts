@@ -6,7 +6,7 @@ export interface RegisterRequest {
   group_name: string;
   trained_level: string;
   skills: string;
-  role?: string; // Необязательное поле из примеров
+  role?: string;
 }
 
 export interface RegisterResponse {

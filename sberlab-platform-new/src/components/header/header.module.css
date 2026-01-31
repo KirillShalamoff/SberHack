@@ -1,4 +1,3 @@
-/* Сброс базовых стилей для элементов */
 *,
 *::before,
 *::after {
@@ -14,7 +13,6 @@ button {
   font-family: inherit;
 }
 
-/* Header Styles */
 .header {
   background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;

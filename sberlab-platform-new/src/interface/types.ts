@@ -1,21 +1,16 @@
-// src/interface/types.ts
 export interface ProjectCardProps {
-  // Основные поля
   id: string | number;
   title: string;
   description: string;
 
-  // Новые поля из БД (сделаем их опциональными)
-  keyTasks?: string[]; // Ключевые задачи
-  value?: string; // Научная/практическая ценность
-  tags: string[]; // Требуемые навыки
-  curriculumConnection?: string; // Связь с учебной программой
-  difficulty: number; // Сложность по 5-балльной
-  diploma?: boolean; // Можно ли для диплома
-  scientificNovelty?: string; // Научная новизна
-  duration: string; // Срок
-
-  // Ментор
+  keyTasks?: string[];
+  value?: string;
+  tags: string[];
+  curriculumConnection?: string;
+  difficulty: number;
+  diploma?: boolean;
+  scientificNovelty?: string;
+  duration: string;
   mentor: {
     id: number;
     name: string;
@@ -25,28 +20,24 @@ export interface ProjectCardProps {
     avatar?: string;
   };
 
-  // Статус и доступность
   status: "recruiting" | "in_progress" | "completed" | "archived";
   availableSlots?: number;
   maxParticipants?: number;
   startDate?: string;
   endDate?: string;
 
-  // Callback функции
   onArchive?: (id: string | number) => void;
   onDelete?: (id: string | number) => void;
   onClick?: (id: string | number) => void;
-  onApply?: (id: string | number) => void; // Для подачи заявки
+  onApply?: (id: string | number) => void;
 
-  // Дополнительные
   createdAt?: string;
   updatedAt?: string;
-  university?: string; // Для какого вуза проект
-  category?: string[]; // Категории проекта
-  prerequisites?: string; // Предварительные требования
+  university?: string;
+  category?: string[];
+  prerequisites?: string;
 }
 
-// Базовые типы
 export type Priority = "low" | "medium" | "high";
 export type ColumnId = "todo" | "in-progress" | "done" | string;
 
@@ -74,7 +65,6 @@ export interface KanbanBoardState {
   tasks: Task[];
 }
 
-// DnD типы
 export interface DragStartEvent {
   active: { id: string };
 }
@@ -84,7 +74,6 @@ export interface DragEndEvent {
   over: { id: string } | null;
 }
 
-// Пропсы компонентов
 export interface TaskCardProps {
   task: Task;
   onEdit?: (task: Task) => void;
@@ -95,8 +84,8 @@ export interface ColumnProps {
   column: Column;
   tasks: Task[];
   onAddTask?: (columnId: ColumnId) => void;
-  onEditTask?: (task: Task) => void; // Добавляем
-  onDeleteTask?: (taskId: string) => void; // Добавляем
+  onEditTask?: (task: Task) => void;
+  onDeleteTask?: (taskId: string) => void;
 }
 
 export interface KanbanBoardProps {

@@ -52,7 +52,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     "urgent",
   ];
 
-  // Инициализация формы
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -75,7 +74,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   }, [initialData, mode, columnId]);
 
-  // Валидация
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -93,7 +91,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Обработка отправки
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -112,7 +109,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onClose();
   };
 
-  // Обработка изменений
   const handleChange = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -120,7 +116,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  // Работа с метками
   const handleAddLabel = (label: string) => {
     if (label.trim() && !formData.labels.includes(label.trim())) {
       handleChange("labels", [...formData.labels, label.trim()]);
@@ -141,7 +136,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  // Закрытие по ESC
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -153,7 +147,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  // Блокировка скролла
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";

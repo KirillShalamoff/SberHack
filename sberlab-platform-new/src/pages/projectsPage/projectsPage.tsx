@@ -13,7 +13,6 @@ export const ProjectsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Фильтры
   const [statusFilter, setStatusFilter] = useState<
     "all" | "recruiting" | "in_progress" | "completed" | "archived"
   >("all");
@@ -36,7 +35,6 @@ export const ProjectsPage: React.FC = () => {
     try {
       const apiProjects = await projectsApi.getProjects();
 
-      // Преобразуем в формат для ProjectCard
       const formattedProjects: ProjectCardProps[] = apiProjects.map(
         (project) => ({
           id: project.id,
@@ -73,12 +71,10 @@ export const ProjectsPage: React.FC = () => {
 
   const handleApply = (id: string | number) => {
     console.log("Подача заявки на проект:", id);
-    // Здесь будет вызов API для подачи заявки
     projectsApi
       .applyToProject(id.toString())
       .then((response) => {
         alert("Заявка успешно подана!");
-        // Обновляем список проектов
         loadProjects();
       })
       .catch((error) => {
@@ -88,12 +84,10 @@ export const ProjectsPage: React.FC = () => {
 
   const handleArchive = (id: string | number) => {
     console.log("Архивация проекта:", id);
-    // Здесь будет вызов API для архивации
   };
 
   const handleDelete = (id: string | number) => {
     console.log("Удаление проекта:", id);
-    // Здесь будет вызов API для удаления
   };
 
   const handleCardClick = (id: string | number) => {
@@ -104,14 +98,11 @@ export const ProjectsPage: React.FC = () => {
     navigate("/projects/new");
   };
 
-  // Фильтрация проектов
   const filteredProjects = projects.filter((project) => {
-    // Фильтр по статусу
     if (statusFilter !== "all" && project.status !== statusFilter) {
       return false;
     }
 
-    // Фильтр по сложности
     if (
       difficultyFilter !== "all" &&
       project.difficulty.toString() !== difficultyFilter
@@ -119,7 +110,6 @@ export const ProjectsPage: React.FC = () => {
       return false;
     }
 
-    // Фильтр по диплому
     if (diplomaFilter === "diploma" && !project.diploma) {
       return false;
     }
@@ -127,7 +117,6 @@ export const ProjectsPage: React.FC = () => {
       return false;
     }
 
-    // Поиск по названию, описанию и тегам
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const searchIn = [
@@ -148,7 +137,6 @@ export const ProjectsPage: React.FC = () => {
     return true;
   });
 
-  // Группировка проектов по статусу
   const recruitingProjects = filteredProjects.filter(
     (p) => p.status === "recruiting",
   );

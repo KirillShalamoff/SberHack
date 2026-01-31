@@ -54,7 +54,6 @@ export interface Stats {
 }
 
 export const adminApiService = {
-  // Управление пользователями
   getUsers: async (filters: UserFilters = {}): Promise<UsersResponse> => {
     const response = await adminApi.get("/admin/users", { params: filters });
     return response.data;
@@ -82,7 +81,6 @@ export const adminApiService = {
     return response.data;
   },
 
-  // Аналитика
   getStats: async (): Promise<Stats> => {
     const response = await adminApi.get("/admin/stats");
     return response.data;

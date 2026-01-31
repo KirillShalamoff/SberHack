@@ -33,7 +33,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("all");
 
-  // Состояния для модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [currentColumn, setCurrentColumn] = useState<ColumnId>("todo");
@@ -72,7 +71,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     [columns],
   );
 
-  // Обработка начала перетаскивания
+  // Обработка перетаскивания
   const handleDragStart = useCallback(
     (event: DndDragStartEvent) => {
       const task = getTask(event.active.id as string);
@@ -81,7 +80,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     [getTask],
   );
 
-  // Обработка завершения перетаскивания
   const handleDragEnd = useCallback(
     (event: DndDragEndEvent) => {
       const { active, over } = event;
@@ -98,7 +96,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
       if (!activeColumn || !overColumn) return;
 
-      // Если задача перемещается в другую колонку
       if (activeColumn.id !== overColumn.id) {
         setColumns((prevColumns) => {
           const newColumns = [...prevColumns];
@@ -137,7 +134,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           return newColumns;
         });
       } else {
-        // Перемещение внутри одной колонки
         setColumns((prevColumns) => {
           const newColumns = [...prevColumns];
           const columnIndex = newColumns.findIndex(
@@ -165,7 +161,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     [columns, getTaskColumn, onTaskMove],
   );
 
-  // Модальное окно
   const handleOpenCreateModal = (columnId: ColumnId) => {
     setCurrentColumn(columnId);
     setModalMode("create");
@@ -291,10 +286,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   return (
     <div className={s.kanbanContainer}>
-      {/* Панель управления */}
       <div className={s.controlPanel}>
-        <h1>🚀 Kanban Dashboard (TypeScript)</h1>
-
         <div className={s.filters}>
           <div className={s.searchContainer}>
             <input
@@ -380,7 +372,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </DragOverlay>
       </DndContext>
 
-      {/* Модальное окно */}
       <TaskModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

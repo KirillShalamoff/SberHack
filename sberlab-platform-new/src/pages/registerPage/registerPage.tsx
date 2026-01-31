@@ -26,8 +26,8 @@ export const RegisterPage: React.FC = () => {
     faculty: "",
     course: "",
     skills: "",
-    group_name: "", // Для API
-    trained_level: "junior", // Для API (по умолчанию)
+    group_name: "",
+    trained_level: "junior",
 
     // Шаг 4: Роль
     role: "student",
@@ -108,7 +108,6 @@ export const RegisterPage: React.FC = () => {
           newErrors.course = "Введите корректный курс (1-6)";
         }
 
-        // Для API нужно сформировать group_name
         if (!formData.group_name) {
           newErrors.group_name = "Введите номер группы";
         }
@@ -136,15 +135,11 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  // Функция для подготовки данных для API
   const prepareRegisterData = (): RegisterRequest => {
-    // Собираем full_name из имени и фамилии
     const full_name = `${formData.firstName} ${formData.lastName}`.trim();
 
-    // Формируем group_name на основе университета, факультета и курса
     const group_name = `${formData.university.substring(0, 3)}-${formData.faculty}-${formData.course}`;
 
-    // Определяем trained_level на основе курса
     let trained_level = "junior";
     if (parseInt(formData.course) >= 3) trained_level = "middle";
     if (parseInt(formData.course) >= 5) trained_level = "senior";
@@ -180,16 +175,13 @@ export const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Подготавливаем данные для API
       const registerData = prepareRegisterData();
       console.log("Отправка данных регистрации:", registerData);
 
-      // Вызов реального API
       const response = await authApi.register(registerData);
 
       console.log("Регистрация успешна:", response);
 
-      // Перенаправляем на страницу входа с сообщением
       navigate("/login", {
         state: {
           message: "Регистрация успешна! Теперь вы можете войти в аккаунт.",

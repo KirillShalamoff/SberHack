@@ -15,7 +15,7 @@ export const mockColumns: Column[] = [
     title: "В работе",
     taskIds: ["1", "5", "8"],
     color: "#3B82F6",
-    limit: 5, // WIP лимит - не более 5 задач одновременно
+    limit: 5,
     order: 2,
     description: "Задачи в активной разработке",
   },
@@ -33,7 +33,7 @@ export const mockColumns: Column[] = [
     title: "Выполнено",
     taskIds: ["2", "10"],
     color: "#10B981",
-    limit: undefined, // Без лимита
+    limit: undefined,
     order: 4,
     description: "Завершенные задачи",
   },

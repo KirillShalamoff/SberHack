@@ -27,7 +27,6 @@ export const Layout: React.FC = () => {
     { path: "/profile", label: "Профиль", icon: "user" },
   ];
 
-  // Скрываем панель навигации на страницах входа/регистрации
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
 

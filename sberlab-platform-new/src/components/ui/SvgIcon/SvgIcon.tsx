@@ -8,7 +8,6 @@ interface SvgIconProps {
   color?: string;
 }
 
-// Импортируем SVG как React компоненты
 const icons: Record<string, React.FC<React.SVGProps<SVGSVGElement>>> = {
   "star-filled": (props) => (
     <svg {...props} viewBox="0 0 24 24">

@@ -87,7 +87,7 @@ const UsersList = () => {
     if (window.confirm("Вы уверены, что хотите изменить роль пользователя?")) {
       try {
         await adminApiService.updateUserRole(userId, newRole);
-        fetchUsers(); // Обновляем список
+        fetchUsers();
       } catch (err) {
         alert("Ошибка изменения роли");
       }

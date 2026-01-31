@@ -1,8 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 const PrivateRoute = () => {
-  const isAuth = false; // Ваша логика проверки авторизации
-
+  const isAuth = false;
   return isAuth ? <Outlet /> : <Navigate to="/login" replace />;
 };
 

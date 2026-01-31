@@ -1,11 +1,10 @@
-// src/pages/LoginPage/LoginPage.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./loginPage.module.css";
 import Button from "../../components/ui/button/button";
 import { Input } from "../../components/ui/input/input";
 import { SvgIcon } from "../../components/ui/SvgIcon/SvgIcon";
-import { authApi, LoginRequest } from "../../api/auth"; // Импортируем API
+import { authApi, LoginRequest } from "../../api/auth";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +19,6 @@ export const LoginPage: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Очищаем ошибку при вводе
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -56,24 +54,19 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Вызов реального API
       const response = await authApi.login(formData);
 
-      // Сохраняем токены (можно использовать localStorage или контекст)
       localStorage.setItem("access_token", response.access_token);
       localStorage.setItem("refresh_token", response.refresh_token);
 
       console.log("Вход выполнен успешно:", response);
 
-      // Получаем информацию о пользователе
       const userInfo = await authApi.getMe(response.access_token);
       console.log("Информация о пользователе:", userInfo);
 
-      // Сохраняем информацию о пользователе
       localStorage.setItem("user_id", userInfo.user_id);
       localStorage.setItem("user_role", userInfo.role);
 
-      // Перенаправление после успешного входа
       navigate("/dashboard");
     } catch (error: any) {
       console.error("Ошибка входа:", error);

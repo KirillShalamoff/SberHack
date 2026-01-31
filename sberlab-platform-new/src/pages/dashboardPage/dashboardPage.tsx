@@ -19,7 +19,6 @@ export const DashboardPage: React.FC = () => {
   });
 
   useEffect(() => {
-    // Загружаем информацию о пользователе
     const userId = localStorage.getItem("user_id");
     const userRole = localStorage.getItem("user_role");
     const userEmail = localStorage.getItem("user_email");

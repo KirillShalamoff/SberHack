@@ -33,10 +33,10 @@ export interface Column {
   title: string;
   taskIds: string[];
   color: string;
-  limit?: number; // Максимальное количество задач в колонке
-  wipLimit?: number; // Work In Progress лимит
-  description?: string; // Описание колонки
-  order: number; // Порядок колонок
+  limit?: number;
+  wipLimit?: number;
+  description?: string;
+  order: number;
 }
 
 export interface DashboardStats {
