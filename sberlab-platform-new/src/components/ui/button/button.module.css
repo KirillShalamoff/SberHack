@@ -1,0 +1,125 @@
+@import "../../../styles/variables.css";
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-padding);
+  font-size: clamp(14px, 2.5vw, 16px);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  gap: 10px;
+  border: 1px solid transparent;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Светлая кнопка (secondary) */
+.button-secondary {
+  background-color: var(--color-bg-white);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-secondary);
+  box-shadow: var(--shadow);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
+  color: var(--color-text-light);
+  border-color: var(--color-secondary-hover);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.button-secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Закрашенная кнопка */
+.button-primary {
+  background: var(--gradient-primary);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-primary);
+  box-shadow: var(--shadow-primary);
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.button-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-primary-hover);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: -1;
+}
+
+.button-primary:hover:not(:disabled) {
+  box-shadow: var(--shadow-primary-hover);
+  transform: translateY(-2px);
+}
+
+.button-primary:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.button-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-primary);
+}
+
+/* Серая активная кнопка */
+.button-activeGray {
+  padding: clamp(5px, 1vw, 10px) clamp(5px, 1.5vw, 17px);
+  background-color: var(--color-bg-white);
+  color: var(--color-text-gray);
+  border: 1px solid var(--color-border-gray);
+  box-shadow: var(--shadow);
+}
+
+.button-activeGray:hover:not(:disabled) {
+  background-color: var(--color-bg-gray);
+  color: var(--color-text-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+@keyframes button-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .button {
+    font-size: clamp(11px, 2vw, 15px);
+    padding: 1.5vw 1.5vw;
+    border-radius: var(--radius-md);
+    gap: 8px;
+  }
+
+  .button-with-icon {
+    padding-right: 1.5vw;
+  }
+}

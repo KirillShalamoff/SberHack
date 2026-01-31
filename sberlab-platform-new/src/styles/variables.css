@@ -1,0 +1,64 @@
+:root {
+  --color-primary: #00a36f;
+  --color-primary-hover: #008c5d;
+  --color-primary-dark: #00704a;
+  --color-secondary: #00a36f;
+  --color-secondary-hover: #00704a;
+
+  /* Градиенты */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    #00c9a7 100%
+  );
+  --gradient-primary-hover: linear-gradient(
+    135deg,
+    var(--color-primary-hover) 0%,
+    #00b89a 100%
+  );
+
+  /* Текст */
+  --color-text: #17233d;
+  --color-text-light: #f0f0f0;
+  --color-text-gray: #8e8e8e;
+
+  /* Фоны */
+  --color-bg-white: #ffffff;
+  --color-bg-light: #f8f9fa;
+  --color-bg-gray: #e9ecef;
+
+  /* Границы */
+  --color-border-gray: #8e8e8e;
+
+  /* Тени */
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 4px 12px rgba(0, 163, 111, 0.3);
+  --shadow-primary-hover: 0 6px 16px rgba(0, 163, 111, 0.4);
+
+  /* Анимации */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Скругления */
+  --radius-sm: 4px;
+  --radius-md: 15px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Отступы */
+  --button-padding: 10px 25px;
+
+  /* Приоритеты задач */
+  --color-priority-high: #ff5630;
+  --color-priority-medium: #ffab00;
+  --color-priority-low: #21a038;
+
+  /* Колонки канбана */
+  --color-column-todo: #1a6ee8;
+  --color-column-in-progress: #ff9500;
+  --color-column-done: #21a038;
+}
