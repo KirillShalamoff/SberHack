@@ -1,0 +1,837 @@
+// AdminPage.tsx
+import React, { useState, useEffect } from 'react';
+import { 
+  Layout, 
+  Card, 
+  Table, 
+  Button, 
+  Modal, 
+  Form, 
+  Input, 
+  Select, 
+  Tag, 
+  Statistic,
+  Tabs,
+  Space,
+  Avatar,
+  Tooltip,
+  message,
+  Badge,
+  Progress,
+  Divider
+} from 'antd';
+import {
+  UserOutlined,
+  TeamOutlined,
+  BarChartOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  MailOutlined,
+  BookOutlined,
+  TrophyOutlined
+} from '@ant-design/icons';
+import './AdminPage.css';
+
+const { Header, Content, Sider } = Layout;
+const { Option } = Select;
+const { TabPane } = Tabs;
+
+// Типы данных
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'admin' | 'mentor' | 'student';
+  group_name: string;
+  trained_level: 'Beginner' | 'Middle' | 'Advanced';
+  skills: string;
+  status: 'active' | 'inactive';
+  created_at: string;
+}
+
+interface Grade {
+  ID: number;
+  StudentID: string;
+  ProjectID: number;
+  GradeType: 'practice' | 'control_week' | 'project_final';
+  Grade: number;
+  CreatedAt: string;
+}
+
+interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  assignee: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'todo' | 'in_progress' | 'done';
+  grade?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TaskStats {
+  user_id: string;
+  full_name: string;
+  total: number;
+  todo: number;
+  in_progress: number;
+  done: number;
+}
+
+interface StatsData {
+  total_users: number;
+  active_users: number;
+  students_count: number;
+  mentors_count: number;
+  avg_grades: {
+    practice: number;
+    control_week: number;
+    project_final: number;
+  };
+}
+
+const AdminPage: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [userGrades, setUserGrades] = useState<Grade[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskStats, setTaskStats] = useState<TaskStats[]>([]);
+  const [stats, setStats] = useState<StatsData | null>(null);
+  const [form] = Form.useForm();
+
+  // Цвета для дизайна (зелено-синяя палитра)
+  const colors = {
+    primary: '#1890ff', // синий
+    secondary: '#52c41a', // зеленый
+    success: '#73d13d',
+    warning: '#faad14',
+    error: '#ff4d4f',
+    background: '#f0f2f5',
+    cardBg: '#ffffff',
+    border: '#d9d9d9',
+    text: '#262626'
+  };
+
+  // Загрузка пользователей
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('http://localhost:8080/admin/users/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      message.error('Ошибка загрузки пользователей');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Загрузка статистики
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('http://localhost:8080/admin/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      message.error('Ошибка загрузки статистики');
+    }
+  };
+
+  // Создание пользователя
+  const handleCreateUser = async (values: any) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('http://localhost:8080/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(values)
+      });
+
+      if (response.ok) {
+        message.success('Пользователь создан успешно');
+        setCreateModalVisible(false);
+        form.resetFields();
+        fetchUsers();
+      }
+    } catch (error) {
+      message.error('Ошибка создания пользователя');
+    }
+  };
+
+  // Изменение роли
+  const handleChangeRole = async (userId: string, role: string) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`http://localhost:8080/admin/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ role })
+      });
+
+      if (response.ok) {
+        message.success('Роль изменена');
+        fetchUsers();
+      }
+    } catch (error) {
+      message.error('Ошибка изменения роли');
+    }
+  };
+
+  // Изменение статуса
+  const handleChangeStatus = async (userId: string, status: string) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`http://localhost:8080/admin/users/${userId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+
+      if (response.ok) {
+        message.success('Статус изменен');
+        fetchUsers();
+      }
+    } catch (error) {
+      message.error('Ошибка изменения статуса');
+    }
+  };
+
+  // Загрузка оценок студента
+  const fetchUserGrades = async (studentId: string) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`http://localhost:8080/admin/students/${studentId}/grades`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setUserGrades(data.grades);
+    } catch (error) {
+      message.error('Ошибка загрузки оценок');
+    }
+  };
+
+  // Загрузка задач
+  const fetchTasks = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('http://localhost:8080/admin/tasks', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      message.error('Ошибка загрузки задач');
+    }
+  };
+
+  // Загрузка статистики задач
+  const fetchTaskStats = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('http://localhost:8080/admin/tasks/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setTaskStats(data);
+    } catch (error) {
+      message.error('Ошибка загрузки статистики задач');
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+    fetchStats();
+    fetchTasks();
+    fetchTaskStats();
+  }, []);
+
+  // Колонки таблицы пользователей
+  const userColumns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 200,
+      render: (id: string) => (
+        <Tag color="blue">{id.substring(0, 8)}...</Tag>
+      )
+    },
+    {
+      title: 'Пользователь',
+      key: 'user',
+      render: (_: any, record: User) => (
+        <Space>
+          <Avatar 
+            style={{ 
+              backgroundColor: record.role === 'admin' ? colors.error : 
+                             record.role === 'mentor' ? colors.warning : colors.secondary 
+            }}
+          >
+            {record.full_name.charAt(0)}
+          </Avatar>
+          <div>
+            <div style={{ fontWeight: 'bold' }}>{record.full_name}</div>
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              <MailOutlined /> {record.email}
+            </div>
+          </div>
+        </Space>
+      )
+    },
+    {
+      title: 'Роль',
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => {
+        let color = 'default';
+        let icon = <UserOutlined />;
+        switch (role) {
+          case 'admin':
+            color = 'red';
+            icon = <UserOutlined />;
+            break;
+          case 'mentor':
+            color = 'orange';
+            icon = <TeamOutlined />;
+            break;
+          case 'student':
+            color = 'green';
+            icon = <BookOutlined />;
+            break;
+        }
+        return (
+          <Tag icon={icon} color={color} style={{ fontWeight: 'bold' }}>
+            {role === 'admin' ? 'Администратор' : 
+             role === 'mentor' ? 'Куратор' : 'Студент'}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: 'Группа / Уровень',
+      key: 'group_level',
+      render: (_: any, record: User) => (
+        <div>
+          {record.group_name && (
+            <div>
+              <Tag color="cyan">{record.group_name}</Tag>
+            </div>
+          )}
+          {record.trained_level && (
+            <div style={{ marginTop: 4 }}>
+              <Badge 
+                color={
+                  record.trained_level === 'Beginner' ? 'blue' :
+                  record.trained_level === 'Middle' ? 'green' : 'red'
+                }
+                text={`Уровень: ${record.trained_level}`}
+              />
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string, record: User) => (
+        <Tag color={status === 'active' ? 'success' : 'default'}>
+          {status === 'active' ? 'Активен' : 'Неактивен'}
+        </Tag>
+      )
+    },
+    {
+      title: 'Действия',
+      key: 'actions',
+      render: (_: any, record: User) => (
+        <Space size="small">
+          <Tooltip title="Просмотр оценок">
+            <Button 
+              type="primary" 
+              size="small" 
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelectedUser(record);
+                fetchUserGrades(record.id);
+              }}
+              style={{ backgroundColor: colors.primary }}
+            />
+          </Tooltip>
+          <Tooltip title="Изменить роль">
+            <Select
+              size="small"
+              value={record.role}
+              style={{ width: 100 }}
+              onChange={(value) => handleChangeRole(record.id, value)}
+            >
+              <Option value="student">Студент</Option>
+              <Option value="mentor">Куратор</Option>
+              <Option value="admin">Админ</Option>
+            </Select>
+          </Tooltip>
+          <Tooltip title={record.status === 'active' ? 'Деактивировать' : 'Активировать'}>
+            <Button 
+              size="small"
+              icon={record.status === 'active' ? <LockOutlined /> : <UnlockOutlined />}
+              danger={record.status === 'active'}
+              onClick={() => handleChangeStatus(
+                record.id, 
+                record.status === 'active' ? 'inactive' : 'active'
+              )}
+            />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
+
+  // Колонки для оценок
+  const gradeColumns = [
+    {
+      title: 'Проект',
+      dataIndex: 'ProjectID',
+      key: 'ProjectID'
+    },
+    {
+      title: 'Тип оценки',
+      dataIndex: 'GradeType',
+      key: 'GradeType',
+      render: (type: string) => {
+        const types: Record<string, string> = {
+          practice: 'Практика',
+          control_week: 'Контрольная неделя',
+          project_final: 'Финальный проект'
+        };
+        return (
+          <Tag color={
+            type === 'practice' ? 'blue' :
+            type === 'control_week' ? 'orange' : 'green'
+          }>
+            {types[type] || type}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: 'Оценка',
+      dataIndex: 'Grade',
+      key: 'Grade',
+      render: (grade: number) => {
+        let color = '#52c41a';
+        if (grade < 4) color = '#ff4d4f';
+        else if (grade < 7) color = '#faad14';
+        
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Progress 
+              percent={grade * 10} 
+              showInfo={false} 
+              size="small" 
+              strokeColor={color}
+              style={{ width: 80, marginRight: 8 }}
+            />
+            <span style={{ fontWeight: 'bold', color }}>{grade.toFixed(1)}</span>
+          </div>
+        );
+      }
+    },
+    {
+      title: 'Дата',
+      dataIndex: 'CreatedAt',
+      key: 'CreatedAt',
+      render: (date: string) => new Date(date).toLocaleDateString('ru-RU')
+    }
+  ];
+
+  return (
+    <Layout style={{ minHeight: '100vh', background: colors.background }}>
+      <Sider
+        width={250}
+        style={{
+          background: 'linear-gradient(180deg, #001529 0%, #003a8c 100%)',
+          boxShadow: '2px 0 8px rgba(0,0,0,0.15)'
+        }}
+      >
+        <div style={{ padding: '24px 16px' }}>
+          <div style={{ color: 'white', marginBottom: 32 }}>
+            <h2 style={{ color: 'white', marginBottom: 8 }}>
+              <TeamOutlined /> Админ-панель
+            </h2>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>
+              Управление системой обучения
+            </div>
+          </div>
+          
+          <div style={{ marginBottom: 16 }}>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />} 
+              block
+              onClick={() => setCreateModalVisible(true)}
+              style={{
+                background: colors.secondary,
+                borderColor: colors.secondary,
+                height: 40
+              }}
+            >
+              Создать пользователя
+            </Button>
+          </div>
+
+          <Divider style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '16px 0' }} />
+
+          {/* Статистика в сайдбаре */}
+          {stats && (
+            <div style={{ color: 'white', opacity: 0.9 }}>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 12, marginBottom: 4 }}>Всего пользователей</div>
+                <div style={{ fontSize: 24, fontWeight: 'bold' }}>{stats.total_users}</div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: 12, marginBottom: 4 }}>Студенты</div>
+                  <div style={{ fontSize: 18, fontWeight: 'bold', color: colors.success }}>
+                    {stats.students_count}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 12, marginBottom: 4 }}>Кураторы</div>
+                  <div style={{ fontSize: 18, fontWeight: 'bold', color: colors.warning }}>
+                    {stats.mentors_count}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Sider>
+
+      <Layout>
+        <Header style={{ 
+          background: 'white', 
+          padding: '0 24px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          borderBottom: `1px solid ${colors.border}`
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ margin: 0, color: colors.text }}>
+              Управление пользователями
+            </h2>
+            <Space>
+              <Button icon={<BarChartOutlined />}>
+                Статистика
+              </Button>
+              <Button type="primary" icon={<TrophyOutlined />}>
+                Итоговый отчет
+              </Button>
+            </Space>
+          </div>
+        </Header>
+
+        <Content style={{ margin: '24px 16px', padding: 24 }}>
+          <Tabs defaultActiveKey="users">
+            <TabPane tab="Пользователи" key="users">
+              <Card 
+                title="Список пользователей" 
+                extra={
+                  <Space>
+                    <Input.Search placeholder="Поиск пользователей..." style={{ width: 200 }} />
+                    <Select defaultValue="all" style={{ width: 120 }}>
+                      <Option value="all">Все роли</Option>
+                      <Option value="student">Студенты</Option>
+                      <Option value="mentor">Кураторы</Option>
+                    </Select>
+                  </Space>
+                }
+                style={{ borderRadius: 8 }}
+              >
+                <Table
+                  columns={userColumns}
+                  dataSource={users}
+                  rowKey="id"
+                  loading={loading}
+                  pagination={{ pageSize: 10 }}
+                  scroll={{ x: 1000 }}
+                />
+              </Card>
+            </TabPane>
+
+            <TabPane tab="Оценки" key="grades">
+              <Card title="Оценки студентов">
+                {selectedUser ? (
+                  <div>
+                    <div style={{ marginBottom: 24, padding: 16, background: colors.background, borderRadius: 6 }}>
+                      <h3 style={{ marginBottom: 8 }}>
+                        <BookOutlined /> {selectedUser.full_name}
+                      </h3>
+                      <Space size="large">
+                        <span>Email: {selectedUser.email}</span>
+                        <span>Группа: {selectedUser.group_name || '—'}</span>
+                        <span>Уровень: {selectedUser.trained_level || '—'}</span>
+                      </Space>
+                    </div>
+                    
+                    <Table
+                      columns={gradeColumns}
+                      dataSource={userGrades}
+                      rowKey="ID"
+                      pagination={{ pageSize: 5 }}
+                    />
+
+                    {stats?.avg_grades && (
+                      <div style={{ marginTop: 24, padding: 16, background: colors.background, borderRadius: 6 }}>
+                        <h4>Средние оценки по типам:</h4>
+                        <Space size="large">
+                          <Statistic
+                            title="Практика"
+                            value={stats.avg_grades.practice}
+                            precision={1}
+                            suffix="/10"
+                            valueStyle={{ color: colors.primary }}
+                          />
+                          <Statistic
+                            title="Контрольная неделя"
+                            value={stats.avg_grades.control_week}
+                            precision={1}
+                            suffix="/10"
+                            valueStyle={{ color: colors.warning }}
+                          />
+                          <Statistic
+                            title="Финальный проект"
+                            value={stats.avg_grades.project_final}
+                            precision={1}
+                            suffix="/10"
+                            valueStyle={{ color: colors.success }}
+                          />
+                        </Space>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center', padding: 40 }}>
+                    <BookOutlined style={{ fontSize: 48, color: '#ddd', marginBottom: 16 }} />
+                    <p style={{ color: '#666' }}>Выберите студента для просмотра оценок</p>
+                  </div>
+                )}
+              </Card>
+            </TabPane>
+
+            <TabPane tab="Задачи" key="tasks">
+              <Row gutter={[16, 16]}>
+                <Col span={16}>
+                  <Card title="Список задач">
+                    <Table
+                      dataSource={tasks}
+                      rowKey="id"
+                      columns={[
+                        { title: 'Задача', dataIndex: 'title', key: 'title' },
+                        { 
+                          title: 'Приоритет', 
+                          dataIndex: 'priority', 
+                          key: 'priority',
+                          render: (priority) => (
+                            <Tag color={
+                              priority === 'high' ? 'red' :
+                              priority === 'medium' ? 'orange' : 'blue'
+                            }>
+                              {priority === 'high' ? 'Высокий' :
+                               priority === 'medium' ? 'Средний' : 'Низкий'}
+                            </Tag>
+                          )
+                        },
+                        { 
+                          title: 'Статус', 
+                          dataIndex: 'status', 
+                          key: 'status',
+                          render: (status) => (
+                            <Tag color={
+                              status === 'done' ? 'green' :
+                              status === 'in_progress' ? 'blue' : 'default'
+                            }>
+                              {status === 'done' ? 'Выполнено' :
+                               status === 'in_progress' ? 'В работе' : 'К выполнению'}
+                            </Tag>
+                          )
+                        },
+                        { title: 'Оценка', dataIndex: 'grade', key: 'grade' },
+                        { title: 'Дата создания', dataIndex: 'created_at', key: 'created_at' }
+                      ]}
+                    />
+                  </Card>
+                </Col>
+                <Col span={8}>
+                  <Card title="Статистика задач по пользователям">
+                    {taskStats.map(stat => (
+                      <div key={stat.user_id} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #f0f0f0' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: 8 }}>{stat.full_name}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div>
+                            <div style={{ fontSize: 12, color: '#666' }}>Всего</div>
+                            <div style={{ fontSize: 18, fontWeight: 'bold' }}>{stat.total}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 12, color: '#666' }}>К выполнению</div>
+                            <div style={{ fontSize: 18, fontWeight: 'bold' }}>{stat.todo}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 12, color: '#666' }}>В работе</div>
+                            <div style={{ fontSize: 18, fontWeight: 'bold' }}>{stat.in_progress}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 12, color: '#666' }}>Выполнено</div>
+                            <div style={{ fontSize: 18, fontWeight: 'bold', color: colors.success }}>{stat.done}</div>
+                          </div>
+                        </div>
+                        <Progress 
+                          percent={stat.total > 0 ? (stat.done / stat.total) * 100 : 0}
+                          size="small"
+                          strokeColor={colors.success}
+                        />
+                      </div>
+                    ))}
+                  </Card>
+                </Col>
+              </Row>
+            </TabPane>
+          </Tabs>
+        </Content>
+      </Layout>
+
+      {/* Модальное окно создания пользователя */}
+      <Modal
+        title="Создание нового пользователя"
+        open={createModalVisible}
+        onCancel={() => {
+          setCreateModalVisible(false);
+          form.resetFields();
+        }}
+        onOk={() => form.submit()}
+        okText="Создать"
+        cancelText="Отмена"
+        width={600}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCreateUser}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: true, message: 'Введите email' },
+                  { type: 'email', message: 'Введите корректный email' }
+                ]}
+              >
+                <Input prefix={<MailOutlined />} placeholder="user@example.com" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="password"
+                label="Пароль"
+                rules={[
+                  { required: true, message: 'Введите пароль' },
+                  { min: 8, message: 'Минимум 8 символов' }
+                ]}
+              >
+                <Input.Password placeholder="Минимум 8 символов" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            name="full_name"
+            label="Полное имя"
+            rules={[{ required: true, message: 'Введите полное имя' }]}
+          >
+            <Input placeholder="Иванов Иван Иванович" />
+          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="role"
+                label="Роль"
+                rules={[{ required: true, message: 'Выберите роль' }]}
+              >
+                <Select placeholder="Выберите роль">
+                  <Option value="student">Студент</Option>
+                  <Option value="mentor">Куратор</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="group_name"
+                label="Группа (для студентов)"
+              >
+                <Input placeholder="Группа 1" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="trained_level"
+                label="Уровень обучения"
+              >
+                <Select placeholder="Выберите уровень">
+                  <Option value="Beginner">Beginner</Option>
+                  <Option value="Middle">Middle</Option>
+                  <Option value="Advanced">Advanced</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="skills"
+                label="Навыки"
+              >
+                <Input placeholder="Go, SQL, React, TypeScript" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+    </Layout>
+  );
+};
+
+export default AdminPage;

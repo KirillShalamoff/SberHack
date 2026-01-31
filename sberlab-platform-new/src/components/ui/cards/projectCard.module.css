@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   max-width: 400px;
 
   /* Visual */
@@ -38,6 +38,7 @@
   font-weight: 600;
   color: #111827;
   line-height: 1.4;
+  padding-right: 80px;
 
   /* Layout */
   margin: 0 0 8px 0;
@@ -270,7 +271,8 @@
 /* Status Badge */
 .statusBadge {
   position: absolute;
-  top: 16px;
+  top: -10px;
+  border: 2px solid white;
   right: 16px;
   padding: 4px 12px;
   border-radius: var(--radius-xl);

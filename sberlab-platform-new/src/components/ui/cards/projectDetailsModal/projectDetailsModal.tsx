@@ -57,7 +57,7 @@ export const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
         <div className={styles.modalContent}>
           {/* Статус и основная информация */}
           <div className={styles.statusSection}>
-            <div className={`${styles.statusBadge} ${styles[project.status]}`}>
+            <div className={`${styles.statusBadge} `}>
               {project.status === "recruiting" && "Идет набор"}
               {project.status === "in_progress" && "В работе"}
               {project.status === "completed" && "Завершен"}

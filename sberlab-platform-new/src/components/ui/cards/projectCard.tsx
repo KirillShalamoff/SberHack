@@ -30,6 +30,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   ...rest
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState<
+    "none" | "pending" | "success" | "error"
+  >("none");
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   const handleCardClick = () => {
     if (onClick) {
@@ -47,11 +52,92 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     setIsModalOpen(false);
   };
 
-  const handleApply = (e: React.MouseEvent) => {
+  const handleApply = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onApply) {
-      onApply(id);
+
+    if (isApplying) return; // Предотвращаем множественные нажатия
+
+    setIsApplying(true);
+    setApplicationStatus("pending");
+
+    try {
+      // Вызываем API для подачи заявки
+      const response = await submitApplication(id);
+
+      setApplicationId(response.application_id);
+      setApplicationStatus("success");
+
+      if (onApply) {
+        onApply(id);
+      }
+
+      alert(
+        `Заявка успешно подана!\nНомер заявки: ${response.application_id}\nСтатус: ${response.status === "pending" ? "На рассмотрении" : response.status}`,
+      );
+
+      setTimeout(() => {
+        setApplicationStatus("none");
+      }, 3000);
+    } catch (error: any) {
+      console.error("Ошибка при подаче заявки:", error);
+      setApplicationStatus("error");
+
+      if (
+        error.message?.includes("409") ||
+        error.message?.includes("already applied")
+      ) {
+        alert("Вы уже подали заявку на этот проект.");
+      } else if (
+        error.message?.includes("401") ||
+        error.message?.includes("403")
+      ) {
+        alert("Для подачи заявки необходимо авторизоваться.");
+        // Можно перенаправить на страницу логина
+        // window.location.href = "/login";
+      } else {
+        alert("Не удалось подать заявку. Пожалуйста, попробуйте позже.");
+      }
+
+      // Сброс статуса через 3 секунды
+      setTimeout(() => {
+        setApplicationStatus("none");
+      }, 3000);
+    } finally {
+      setIsApplying(false);
     }
+  };
+
+  const submitApplication = async (projectId: string | number) => {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      throw new Error("Требуется авторизация");
+    }
+
+    const response = await fetch(`/student/projects/${projectId}/apply`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `Заявка на проект "${title}". Хочу участвовать!`,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 409) {
+        throw new Error("Вы уже подали заявку на этот проект");
+      } else if (response.status === 401) {
+        throw new Error("Требуется авторизация");
+      } else if (response.status === 403) {
+        throw new Error("Нет прав на подачу заявки");
+      } else {
+        throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+      }
+    }
+
+    return response.json();
   };
 
   const handleDetails = (e: React.MouseEvent) => {
@@ -121,6 +207,32 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     }
   };
 
+  // Получение текста для кнопки в зависимости от статуса
+  const getApplyButtonText = () => {
+    if (isApplying) return "Отправка...";
+    if (applicationStatus === "success") return "Заявка подана!";
+    if (applicationStatus === "pending") return "Обработка...";
+    if (applicationStatus === "error") return "Ошибка";
+    return "Подать заявку";
+  };
+
+  // Получение варианта кнопки в зависимости от статуса
+  const getApplyButtonVariant = () => {
+    if (applicationStatus === "success") return "success" as any;
+    if (applicationStatus === "error") return "danger" as any;
+    if (isApplying || applicationStatus === "pending")
+      return "secondary" as any;
+    return "secondary" as any;
+  };
+
+  // Получение иконки для кнопки
+  const getApplyButtonIcon = () => {
+    if (applicationStatus === "success") return "check-circle";
+    if (applicationStatus === "error") return "alert-circle";
+    if (isApplying || applicationStatus === "pending") return "loader";
+    return "send";
+  };
+
   return (
     <>
       <div
@@ -134,79 +246,88 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           }
         }}
       >
-        {/* Заголовок и описание */}
-        <div className={styles.header}>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.description}>{description}</p>
-        </div>
-
-        {/* Теги технологий */}
-        <div className={styles.tags}>
-          {tags.map((tag, index) => (
-            <Tag key={index} variant="tech">
-              {tag}
-            </Tag>
-          ))}
-        </div>
-
-        {/* Информация о сложности и сроке */}
-        <div className={styles.metaInfo}>
-          {renderStars()}
-          <div className={styles.duration}>
-            <span>Длительность: {duration}</span>
-          </div>
-        </div>
-
-        {/* Разделитель */}
-        <div className={styles.divider} />
-
-        {/* Нижняя часть с ментором и действиями */}
-        <div className={styles.footer}>
-          <div className={styles.mentorInfo}>
-            <div className={styles.mentorAvatar}>
-              <div className={styles.avatarPlaceholder}>
-                <SvgIcon name="user" width={20} height={20} />
-              </div>
-            </div>
-            <div className={styles.mentorDetails}>
-              <span className={styles.mentorName}>{mentor.name}</span>
-            </div>
-            {diploma == true && (
-              <div className={styles.slots}>
-                <span className={styles.diplomaBadge}>Диплом</span>
-              </div>
-            )}
+        {/* Контейнер для основного контента */}
+        <div className={styles.cardContent}>
+          {/* Заголовок и описание */}
+          <div className={styles.header}>
+            <h3 className={styles.title}>{title}</h3>
+            <p className={styles.description}>{description}</p>
           </div>
 
-          <div className={styles.actions}>
-            {/* Кнопка Подробнее - открывает модальное окно */}
-            <Button variant="primary" onClick={handleDetails}>
-              Подробнее
-            </Button>
+          {/* Теги технологий */}
+          <div className={styles.tags}>
+            {tags.map((tag, index) => (
+              <Tag key={index} variant="tech">
+                {tag}
+              </Tag>
+            ))}
+          </div>
 
-            {status === "recruiting" && (
-              <Button variant="secondary" onClick={handleApply}>
-                Подать заявку
+          {/* Информация о сложности и сроке */}
+          <div className={styles.metaInfo}>
+            {renderStars()}
+            <div className={styles.duration}>
+              <span>Длительность: {duration}</span>
+            </div>
+          </div>
+
+          {/* Разделитель */}
+          <div className={styles.divider} />
+
+          {/* Нижняя часть с ментором и действиями */}
+          <div className={styles.footer}>
+            <div className={styles.mentorInfo}>
+              <div className={styles.mentorAvatar}>
+                <div className={styles.avatarPlaceholder}>
+                  <SvgIcon name="user" width={20} height={20} />
+                </div>
+              </div>
+              <div className={styles.mentorDetails}>
+                <span className={styles.mentorName}>{mentor.name}</span>
+              </div>
+              {diploma == true && (
+                <div className={styles.slots}>
+                  <span className={styles.diplomaBadge}>Диплом</span>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.actions}>
+              {/* Кнопка Подробнее - открывает модальное окно */}
+              <Button variant="primary" onClick={handleDetails}>
+                Подробнее
               </Button>
-            )}
 
-            {/* Кнопки администратора
-            <div className={styles.adminActions}>
-              {onArchive && (
-                <Button variant="secondary" onClick={handleArchive}>
-                  Архивировать
+              {status === "recruiting" && (
+                <Button
+                  variant={getApplyButtonVariant()}
+                  onClick={handleApply}
+                  disabled={isApplying || applicationStatus === "success"}
+                  className={styles.applyButton}
+                >
+                  {getApplyButtonIcon() && (
+                    <SvgIcon
+                      name={getApplyButtonIcon()}
+                      width={16}
+                      height={16}
+                      className={isApplying ? styles.spinningIcon : ""}
+                    />
+                  )}
+                  {getApplyButtonText()}
                 </Button>
               )}
-              {onDelete && (
-                <Button variant="primary" onClick={handleDelete}>
-                  Удалить
-                </Button>
+
+              {/* Показываем ID заявки если заявка подана */}
+              {applicationStatus === "success" && applicationId && (
+                <div className={styles.applicationInfo}>
+                  <small>Заявка #{applicationId.slice(0, 8)}...</small>
+                </div>
               )}
-            </div> */}
+            </div>
           </div>
         </div>
 
-        {/* Бейдж статуса */}
+        {/* Бейдж статуса - теперь снаружи контента */}
         <div
           className={styles.statusBadge}
           style={{ backgroundColor: getStatusColor() }}
@@ -238,7 +359,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         }}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onApply={() => onApply && onApply(id)}
+        onApply={() => handleApply(new MouseEvent("click") as any)}
       />
     </>
   );

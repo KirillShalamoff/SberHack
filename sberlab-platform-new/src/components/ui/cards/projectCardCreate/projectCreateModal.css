@@ -1,0 +1,267 @@
+/* Стили для модалки создания проекта */
+
+/* Формы */
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.formSelect {
+  cursor: pointer;
+  background-color: white;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.descriptionGroup {
+  position: relative;
+}
+
+.generateButton {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+/* Тэги и задачи */
+.editTags,
+.editTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tagsEdit,
+.tasksListEdit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tagItemEdit,
+.taskItemEdit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.taskItemEdit {
+  width: 100%;
+  justify-content: space-between;
+  padding: 8px 12px;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeButton:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.addTagInput,
+.addTaskInput {
+  display: flex;
+  gap: 8px;
+}
+
+.addTagInput input,
+.addTaskInput input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+/* Сложность и диплом */
+.difficultySection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.starsContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.difficultyText {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.diplomaToggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggleInput {
+  display: none;
+}
+
+.toggleSlider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background: #d1d5db;
+  border-radius: 12px;
+  transition: background 0.3s;
+}
+
+.toggleSlider:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background: #10b981;
+}
+
+.toggleInput:checked + .toggleSlider:before {
+  transform: translateX(26px);
+}
+
+.toggleText {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+/* Даты */
+.dateInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dateInput {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dateInput label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Ментор */
+.mentorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Звезды для сложности */
+.starButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s;
+}
+
+.starButton:hover {
+  transform: scale(1.2);
+}
+
+.filled {
+  color: #fbbf24;
+}
+
+.empty {
+  color: #e2e8f0;
+}
+
+/* Кнопки */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Обязательные поля */
+.formLabel[required]::after {
+  content: " *";
+  color: #ef4444;
+}
+
+/* Сообщения об ошибках */
+.errorMessage {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
