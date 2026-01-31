@@ -1,5 +1,3 @@
-/* Task modal & form */
-
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -240,7 +238,11 @@
   transform: translateY(-50%);
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-column-todo));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-column-todo)
+  );
   color: white;
   border-radius: 50%;
   display: flex;

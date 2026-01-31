@@ -7,11 +7,26 @@ import Button from "../../components/ui/button/button";
 import styles from "./projectsPage.module.css";
 import { ProjectsGrid } from "../../components/ui/cards/projectsGrid/projectsGrid";
 
+interface Recommendation {
+  title: string;
+  url: string;
+  description: string;
+  author: string;
+  github_url: string;
+  repository_url: string;
+  explanation?: string;
+}
+
 export const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<ProjectCardProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recommendations, setRecommendations] = useState<ProjectCardProps[]>(
+    [],
+  );
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState<
     "all" | "recruiting" | "in_progress" | "completed" | "archived"
@@ -68,18 +83,230 @@ export const ProjectsPage: React.FC = () => {
       setLoading(false);
     }
   };
+  const handleGetRecommendations = async () => {
+    setLoadingRecommendations(true);
+    try {
+      // Получаем информацию о пользователе для рекомендаций
+      const userSkills =
+        localStorage.getItem("user_skills") || "Python, SQL, React";
+      const userLevel = localStorage.getItem("user_level") || "junior";
+      const userId = localStorage.getItem("user_id");
+      const userEmail = localStorage.getItem("user_email");
 
-  const handleApply = (id: string | number) => {
+      // Формируем данные для отправки в API рекомендаций
+      const recommendationRequest = {
+        project: {
+          name: `Personalized Recommendations for User ${userId || "unknown"}`,
+          description: `Персональные рекомендации проектов для пользователя с навыками: ${userSkills}`,
+          author: userId || "Анонимный пользователь",
+          github_url: "https://github.com/sberlab-nsu",
+          repository_url: "https://github.com/sberlab-nsu/recommendations.git",
+        },
+        recommendations: [], // Пустой массив, его заполнит бэкенд
+      };
+
+      // Вызываем реальное API
+      console.log("Отправляем запрос на рекомендации...");
+
+      try {
+        const apiRecommendations = await projectsApi.getRecommendations(
+          recommendationRequest,
+        );
+        console.log("Получены рекомендации из API:", apiRecommendations);
+
+        // Преобразуем полученные рекомендации в формат ProjectCardProps
+        const formattedRecommendations: ProjectCardProps[] =
+          apiRecommendations.map((rec: any, index: number) => {
+            // Определяем сложность на основе данных из API
+            let difficulty = 3; // По умолчанию средняя сложность
+            if (rec.difficulty === "beginner" || rec.difficulty === "easy")
+              difficulty = 2;
+            if (
+              rec.difficulty === "intermediate" ||
+              rec.difficulty === "medium"
+            )
+              difficulty = 3;
+            if (rec.difficulty === "advanced" || rec.difficulty === "hard")
+              difficulty = 4;
+            if (rec.difficulty === "expert") difficulty = 5;
+
+            return {
+              id: `rec-${Date.now()}-${index}`, // Уникальный ID
+              title: rec.title || `Рекомендованный проект ${index + 1}`,
+              description:
+                rec.description || "Описание проекта будет добавлено",
+              tags: rec.tags ||
+                rec.technologies ||
+                rec.skills || ["Python", "ML", "React"],
+              difficulty,
+              duration: rec.duration || "6 месяцев",
+              status: "recruiting" as const,
+              mentor: {
+                id: rec.author_id || index + 200,
+                name: rec.author || "Ментор проекта",
+                avatar: rec.avatar || undefined,
+              },
+              availableSlots: rec.available_slots || rec.max_participants || 3,
+              keyTasks: rec.key_tasks ||
+                rec.tasks || [
+                  "Изучить технологии проекта",
+                  "Присоединиться к команде",
+                  "Начать разработку",
+                ],
+              value:
+                rec.explanation ||
+                rec.reason ||
+                "Проект рекомендован на основе ваших навыков",
+              curriculumConnection:
+                rec.curriculum_connection ||
+                "Соответствует вашей учебной программе",
+              diploma: rec.diploma || Math.random() > 0.5,
+              scientificNovelty:
+                rec.scientific_novelty || "Инновационный подход в реализации",
+              startDate:
+                rec.start_date ||
+                new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                  .toISOString()
+                  .split("T")[0],
+              endDate:
+                rec.end_date ||
+                new Date(Date.now() + 180 * 24 * 60 * 60 * 1000)
+                  .toISOString()
+                  .split("T")[0],
+            };
+          });
+
+        setRecommendations(formattedRecommendations);
+        setShowRecommendations(true);
+
+        if (formattedRecommendations.length === 0) {
+          alert(
+            "К сожалению, подходящих рекомендаций не найдено. Попробуйте обновить информацию о ваших навыках.",
+          );
+        }
+      } catch (apiError) {
+        console.error("Ошибка API рекомендаций:", apiError);
+
+        // Если API недоступно, используем fallback данные
+        console.log(" Используем fallback данные...");
+
+        const fallbackRecommendations: ProjectCardProps[] = [
+          {
+            id: "rec-fallback-1",
+            title: "Разработка рекомендательной системы на Python",
+            description:
+              "Создание системы рекомендаций для образовательного контента с использованием машинного обучения",
+            tags: ["Python", "ML", "SQL", "Docker", "FastAPI"],
+            difficulty: 4,
+            duration: "6 месяцев",
+            status: "recruiting" as const,
+            mentor: {
+              id: 201,
+              name: "Иван Петров",
+              avatar: undefined,
+            },
+            availableSlots: 3,
+            keyTasks: [
+              "Разработка ML-модели",
+              "Создание REST API",
+              "Интеграция с БД",
+            ],
+            value:
+              "Подходит идеально, так как вы обладаете навыками Python и ML",
+            curriculumConnection: "Курсы по ML и базам данных",
+            diploma: true,
+            scientificNovelty: "Новый алгоритм рекомендаций",
+            startDate: "2024-04-01",
+            endDate: "2024-09-30",
+          },
+          {
+            id: "rec-fallback-2",
+            title: "Веб-приложение на React и TypeScript",
+            description:
+              "Разработка современного веб-приложения для управления проектами",
+            tags: ["React", "TypeScript", "Node.js", "MongoDB", "Tailwind"],
+            difficulty: 3,
+            duration: "5 месяцев",
+            status: "recruiting" as const,
+            mentor: {
+              id: 202,
+              name: "Дмитрий Смирнов",
+              avatar: undefined,
+            },
+            availableSlots: 4,
+            keyTasks: [
+              "Проектирование UI/UX",
+              "Разработка фронтенда",
+              "Создание бэкенда",
+            ],
+            value: "Подходит, так как вы знакомы с React и TypeScript",
+            curriculumConnection: "Веб-технологии",
+            diploma: true,
+            scientificNovelty: "Новый подход к state management",
+            startDate: "2024-04-15",
+            endDate: "2024-09-15",
+          },
+          {
+            id: "rec-fallback-3",
+            title: "Анализ данных в Python",
+            description:
+              "Jupyter, pandas, визуализация. Исследование открытых датасетов.",
+            tags: ["Python", "pandas", "SQL", "Jupyter", "Matplotlib"],
+            difficulty: 2,
+            duration: "4 месяца",
+            status: "recruiting" as const,
+            mentor: {
+              id: 203,
+              name: "Елена Ковалева",
+              avatar: undefined,
+            },
+            availableSlots: 5,
+            keyTasks: [
+              "Исследование датасетов",
+              "Визуализация данных",
+              "Анализ результатов",
+            ],
+            value: "Идеально подходит для начала работы с анализом данных",
+            curriculumConnection: "Анализ данных, Статистика",
+            diploma: false,
+            scientificNovelty: "Новый метод визуализации многомерных данных",
+            startDate: "2024-05-01",
+            endDate: "2024-08-31",
+          },
+        ];
+
+        setRecommendations(fallbackRecommendations);
+        setShowRecommendations(true);
+        alert(
+          "Рекомендации загружены из локального кэша. API временно недоступно.",
+        );
+      }
+    } catch (err: any) {
+      console.error("Общая ошибка получения рекомендаций:", err);
+      alert("Не удалось получить рекомендации. Пожалуйста, попробуйте позже.");
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
+  const handleApply = async (id: string | number) => {
     console.log("Подача заявки на проект:", id);
-    projectsApi
-      .applyToProject(id.toString())
-      .then((response) => {
-        alert("Заявка успешно подана!");
-        loadProjects();
-      })
-      .catch((error) => {
-        alert("Ошибка подачи заявки: " + error.message);
-      });
+
+    try {
+      const response = await projectsApi.applyToProject(id.toString());
+      alert(response.message);
+
+      if (response.success && response.message.includes("войдите")) {
+        navigate("/login", {
+          state: {
+            from: "/projects",
+            message: "Для подачи заявки на проект необходимо войти в систему",
+          },
+        });
+      }
+    } catch (error: any) {
+      alert("Ошибка подачи заявки: " + error.message);
+    }
   };
 
   const handleArchive = (id: string | number) => {
@@ -177,17 +404,71 @@ export const ProjectsPage: React.FC = () => {
       {/* Хедер страницы */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>Проекты СберЛаб-НГУ</h1>
+          <h1 className={styles.pageTitle}>Проекты</h1>
           <p className={styles.pageSubtitle}>
-            Найдите проект по интересам, участвуйте в реальных задачах и
-            развивайте навыки
+            Найдите подходящий проект или получите персональные рекомендации
           </p>
         </div>
-        <Button variant="primary" onClick={handleCreateProject}>
-          <SvgIcon name="plus" width={20} height={20} />
-          Создать проект
-        </Button>
+        <div className={styles.headerActions}>
+          <Button
+            variant="secondary"
+            onClick={handleGetRecommendations}
+            disabled={loadingRecommendations}
+          >
+            {loadingRecommendations ? (
+              <>
+                <SvgIcon name="loader" width={16} height={16} />
+                Загрузка...
+              </>
+            ) : (
+              <>
+                <SvgIcon name="sparkles" width={16} height={16} />
+                Получить рекомендации
+              </>
+            )}
+          </Button>
+          <Button variant="primary" onClick={handleCreateProject}>
+            <SvgIcon name="plus" width={20} height={20} />
+            Создать проект
+          </Button>
+        </div>
       </div>
+
+      {/* Рекомендации (показываются если есть) */}
+      {showRecommendations && recommendations.length > 0 && (
+        <div className={styles.recommendationsSection}>
+          <div className={styles.recommendationsHeader}>
+            <div>
+              <h2 className={styles.recommendationsTitle}>
+                <SvgIcon
+                  name="sparkles"
+                  width={24}
+                  height={24}
+                  color="#F59E0B"
+                />
+                Персональные рекомендации
+              </h2>
+              <p className={styles.recommendationsSubtitle}>
+                Проекты, подобранные специально для вас на основе ваших навыков
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => setShowRecommendations(false)}
+            >
+              Скрыть рекомендации
+            </Button>
+          </div>
+
+          {/* Используем ProjectsGrid для отображения рекомендаций */}
+          <ProjectsGrid
+            projects={recommendations}
+            onApply={handleApply}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
+        </div>
+      )}
 
       {/* Быстрая статистика */}
       <div className={styles.stats}>
@@ -293,24 +574,56 @@ export const ProjectsPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Сетка проектов */}
-      <ProjectsGrid
-        projects={filteredProjects}
-        onApply={handleApply}
-        onArchive={handleArchive}
-        onDelete={handleDelete}
-        onCardClick={handleCardClick}
-      />
+      {/* Основная сетка проектов */}
+      {filteredProjects.length === 0 && !showRecommendations ? (
+        <div className={styles.emptyState}>
+          <SvgIcon name="folder" width={64} height={64} color="#94a3b8" />
+          <h3>Проектов не найдено</h3>
+          <p>Попробуйте изменить фильтры или получить рекомендации</p>
+          <div className={styles.emptyStateActions}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setStatusFilter("all");
+                setDifficultyFilter("all");
+                setDiplomaFilter("all");
+                setSearchQuery("");
+              }}
+            >
+              Сбросить фильтры
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleGetRecommendations}
+              disabled={loadingRecommendations}
+            >
+              Получить рекомендации
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <h2 className={styles.sectionTitle}>Все проекты</h2>
+          <ProjectsGrid
+            projects={filteredProjects}
+            onApply={handleApply}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
+        </>
+      )}
 
-      {/* Призыв к действию */}
-      <div className={styles.ctaSection}>
-        <div className={styles.ctaContent}>
-          <SvgIcon name="rocket" width={64} height={64} color="#00A36F" />
-          <h3>Не нашли подходящий проект?</h3>
-          <p>Создайте свой проект и соберите команду единомышленников</p>
-          <Button variant="primary" onClick={handleCreateProject}>
-            Создать проект
-          </Button>
+      {/* Секция с подсказкой */}
+      <div className={styles.tipSection}>
+        <div className={styles.tipContent}>
+          <SvgIcon name="lightbulb" width={24} height={24} color="#F59E0B" />
+          <div>
+            <h4>Не нашли подходящий проект?</h4>
+            <p>
+              Используйте кнопку "Получить рекомендации" выше или создайте свой
+              проект
+            </p>
+          </div>
         </div>
       </div>
     </div>

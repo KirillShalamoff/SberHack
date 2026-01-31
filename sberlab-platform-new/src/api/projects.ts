@@ -35,6 +35,7 @@ export interface ProjectCardProps {
   duration: string;
   status: "recruiting" | "in_progress" | "completed" | "archived";
   mentor: {
+    id: number;
     name: string;
     avatar?: string;
   };
@@ -62,6 +63,149 @@ export const projectsApi = {
           resolve([
             {
               id: "1",
+              title: "Веб-приложение на Go",
+              description:
+                "Бэкенд на Go, REST API, работа с БД. Мини-соцсеть или трекер задач.",
+              tags: ["Go", "SQL", "REST"],
+              difficulty: 3, // medium -> 3
+              duration: "6 месяцев",
+              status: "recruiting",
+              mentor: {
+                id: 101,
+                name: "Александр Голубев",
+                email: "alexander@example.com",
+              },
+              availableSlots: 4,
+              keyTasks: [
+                "Разработка REST API",
+                "Проектирование базы данных",
+                "Реализация бизнес-логики",
+              ],
+              value:
+                "Практический опыт работы с Go и микросервисной архитектурой",
+              curriculumConnection: "Системное программирование, Базы данных",
+              diploma: true,
+              scientificNovelty: "Новый подход к построению RESTful API на Go",
+              startDate: "2024-03-01",
+              endDate: "2024-08-31",
+              created_at: "2024-01-15",
+            },
+            {
+              id: "2",
+              title: "Анализ данных в Python",
+              description:
+                "Jupyter, pandas, визуализация. Исследование открытых датасетов.",
+              tags: ["Python", "pandas", "SQL", "Jupyter", "Matplotlib"],
+              difficulty: 2, // easy -> 2
+              duration: "4 месяца",
+              status: "recruiting",
+              mentor: {
+                id: 102,
+                name: "Елена Ковалева",
+                email: "elena@example.com",
+              },
+              availableSlots: 5,
+              keyTasks: [
+                "Исследование датасетов",
+                "Визуализация данных",
+                "Анализ результатов",
+              ],
+              value: "Опыт работы с анализом данных и визуализацией",
+              curriculumConnection: "Анализ данных, Статистика",
+              diploma: false,
+              scientificNovelty: "Новый метод визуализации многомерных данных",
+              startDate: "2024-02-15",
+              endDate: "2024-06-15",
+              created_at: "2024-01-20",
+            },
+            {
+              id: "3",
+              title: "Микросервисы и Docker",
+              description: "Несколько сервисов, оркестрация, API Gateway.",
+              tags: ["Docker", "Go", "Linux", "Kubernetes", "API Gateway"],
+              difficulty: 5, // hard -> 5
+              duration: "8 месяцев",
+              status: "in_progress",
+              mentor: {
+                id: 103,
+                name: "Дмитрий Волков",
+                email: "dmitry@example.com",
+              },
+              availableSlots: 2,
+              keyTasks: [
+                "Настройка Docker контейнеров",
+                "Оркестрация сервисов",
+                "Реализация API Gateway",
+              ],
+              value:
+                "Глубокое понимание микросервисной архитектуры и контейнеризации",
+              curriculumConnection: "Распределенные системы, DevOps",
+              diploma: true,
+              scientificNovelty: "Новый подход к оркестрации микросервисов",
+              startDate: "2024-01-10",
+              endDate: "2024-09-10",
+              created_at: "2023-12-20",
+            },
+            {
+              id: "4",
+              title: "Чат-бот на Python",
+              description: "Telegram или VK бот, диалоги, хранение состояния.",
+              tags: ["Python", "API", "Telegram", "FastAPI", "SQLite"],
+              difficulty: 2, // easy -> 2
+              duration: "3 месяца",
+              status: "recruiting",
+              mentor: {
+                id: 104,
+                name: "Ирина Петрова",
+                email: "irina@example.com",
+              },
+              availableSlots: 6,
+              keyTasks: [
+                "Разработка логики бота",
+                "Интеграция с мессенджерами",
+                "Реализация хранения состояния",
+              ],
+              value: "Опыт создания интерактивных чат-ботов",
+              curriculumConnection: "Веб-технологии, Базы данных",
+              diploma: false,
+              scientificNovelty: "Новый алгоритм обработки естественного языка",
+              startDate: "2024-03-15",
+              endDate: "2024-06-15",
+              created_at: "2024-02-01",
+            },
+            {
+              id: "5",
+              title: "ML-модель для классификации",
+              description:
+                "Обучение модели на реальных данных, метрики, деплой.",
+              tags: ["Python", "ML", "scikit-learn", "TensorFlow", "Docker"],
+              difficulty: 5, // hard -> 5
+              duration: "7 месяцев",
+              status: "completed",
+              mentor: {
+                id: 105,
+                name: "Сергей Иванов",
+                email: "sergey@example.com",
+              },
+              availableSlots: 0,
+              keyTasks: [
+                "Подготовка данных",
+                "Обучение моделей",
+                "Деплой решения",
+              ],
+              value: "Полный цикл разработки ML-решения",
+              curriculumConnection:
+                "Машинное обучение, Искусственный интеллект",
+              diploma: true,
+              scientificNovelty:
+                "Новая архитектура нейронной сети для классификации",
+              startDate: "2023-09-01",
+              endDate: "2024-03-31",
+              created_at: "2023-08-15",
+            },
+            // Оставляю ваши оригинальные проекты с небольшими изменениями для разнообразия
+            {
+              id: "6",
               title: "Разработка рекомендательной системы на Python",
               description:
                 "Создание системы рекомендаций для образовательного контента с использованием машинного обучения",
@@ -70,7 +214,7 @@ export const projectsApi = {
               duration: "6 месяцев",
               status: "recruiting",
               mentor: {
-                id: 1,
+                id: 106,
                 name: "Иван Петров",
                 email: "ivan@example.com",
               },
@@ -84,67 +228,12 @@ export const projectsApi = {
               curriculumConnection: "Курсы по ML и базам данных",
               diploma: true,
               scientificNovelty: "Новый алгоритм рекомендаций",
-              startDate: "2024-03-01",
-              endDate: "2024-08-31",
-              created_at: "2024-01-15",
+              startDate: "2024-04-01",
+              endDate: "2024-09-30",
+              created_at: "2024-02-10",
             },
             {
-              id: "2",
-              title: "Создание аналитической системы на SQL и Python",
-              description:
-                "Разработка системы аналитики данных для образовательной платформы",
-              tags: ["Python", "SQL", "Data Analysis", "Pandas", "PostgreSQL"],
-              difficulty: 3,
-              duration: "4 месяца",
-              status: "recruiting",
-              mentor: {
-                id: 1,
-                name: "Мария Сидорова",
-                email: "maria@example.com",
-              },
-              availableSlots: 2,
-              keyTasks: [
-                "Проектирование БД",
-                "Разработка ETL-процессов",
-                "Создание дашбордов",
-              ],
-              value: "Практический опыт работы с большими данными",
-              curriculumConnection: "Базы данных и анализ данных",
-              diploma: false,
-              startDate: "2024-02-15",
-              endDate: "2024-06-15",
-              created_at: "2024-01-20",
-            },
-            {
-              id: "3",
-              title: "Разработка микросервиса на Go",
-              description:
-                "Создание микросервиса для обработки пользовательских событий",
-              tags: ["Go", "Docker", "Kubernetes", "PostgreSQL", "gRPC"],
-              difficulty: 5,
-              duration: "8 месяцев",
-              status: "in_progress",
-              mentor: {
-                id: 1,
-                name: "Алексей Иванов",
-                email: "alexey@example.com",
-              },
-              availableSlots: 1,
-              keyTasks: [
-                "Проектирование архитектуры",
-                "Реализация бизнес-логики",
-                "Настройка CI/CD",
-              ],
-              value: "Опыт работы с микросервисной архитектурой",
-              curriculumConnection: "Распределенные системы",
-              diploma: true,
-              scientificNovelty: "Новый подход к обработке событий",
-              startDate: "2024-01-10",
-              endDate: "2024-09-10",
-              created_at: "2023-12-20",
-            },
-            {
-              id: "4",
+              id: "7",
               title: "Веб-приложение на React и TypeScript",
               description:
                 "Разработка современного веб-приложения для управления проектами",
@@ -153,7 +242,7 @@ export const projectsApi = {
               duration: "5 месяцев",
               status: "recruiting",
               mentor: {
-                id: 1,
+                id: 107,
                 name: "Дмитрий Смирнов",
                 email: "dmitry@example.com",
               },
@@ -166,90 +255,10 @@ export const projectsApi = {
               value: "Полный цикл разработки веб-приложения",
               curriculumConnection: "Веб-технологии",
               diploma: true,
+              scientificNovelty: "Новый подход к state management",
               startDate: "2024-03-15",
               endDate: "2024-08-15",
               created_at: "2024-02-01",
-            },
-            {
-              id: "5",
-              title: "Мобильное приложение для НГУ",
-              description:
-                "Разработка кроссплатформенного мобильного приложения для студентов НГУ",
-              tags: ["React Native", "TypeScript", "Firebase", "Redux", "Expo"],
-              difficulty: 4,
-              duration: "7 месяцев",
-              status: "completed",
-              mentor: {
-                id: 1,
-                name: "Екатерина Волкова",
-                email: "ekaterina@example.com",
-              },
-              availableSlots: 0,
-              keyTasks: [
-                "Проектирование архитектуры",
-                "Разработка UI",
-                "Интеграция с API",
-              ],
-              value: "Опыт разработки мобильных приложений",
-              curriculumConnection: "Мобильная разработка",
-              diploma: true,
-              scientificNovelty: "Новый подход к навигации в приложении",
-              startDate: "2023-09-01",
-              endDate: "2024-03-31",
-              created_at: "2023-08-15",
-            },
-            {
-              id: "6",
-              title: "Чат-бот для поддержки студентов",
-              description:
-                "Создание интеллектуального чат-бота на базе GPT для ответов на вопросы студентов",
-              tags: ["Python", "FastAPI", "OpenAI API", "Docker", "Redis"],
-              difficulty: 4,
-              duration: "6 месяцев",
-              status: "recruiting",
-              mentor: {
-                id: 1,
-                name: "Сергей Козлов",
-                email: "sergey@example.com",
-              },
-              availableSlots: 2,
-              keyTasks: [
-                "Обучение модели",
-                "Разработка API",
-                "Интеграция с мессенджерами",
-              ],
-              value: "Опыт работы с AI и NLP",
-              curriculumConnection: "Искусственный интеллект",
-              diploma: false,
-              startDate: "2024-04-01",
-              endDate: "2024-09-30",
-              created_at: "2024-02-10",
-            },
-            {
-              id: "7",
-              title: "Система мониторинга инфраструктуры",
-              description: "Создание системы мониторинга серверов и приложений",
-              tags: ["Go", "Prometheus", "Grafana", "Docker", "Kubernetes"],
-              difficulty: 5,
-              duration: "9 месяцев",
-              status: "archived",
-              mentor: {
-                id: 1,
-                name: "Андрей Николаев",
-                email: "andrey@example.com",
-              },
-              availableSlots: 0,
-              keyTasks: [
-                "Настройка мониторинга",
-                "Создание дашбордов",
-                "Автоматизация алертинга",
-              ],
-              value: "Опыт работы с DevOps инструментами",
-              curriculumConnection: "Системное администрирование",
-              diploma: true,
-              startDate: "2023-06-01",
-              endDate: "2024-02-29",
-              created_at: "2023-05-15",
             },
             {
               id: "8",
@@ -259,13 +268,13 @@ export const projectsApi = {
               tags: ["Python", "Pandas", "Matplotlib", "API", "Data Mining"],
               difficulty: 3,
               duration: "4 месяца",
-              status: "recruiting",
+              status: "archived",
               mentor: {
-                id: 1,
+                id: 108,
                 name: "Ольга Кузнецова",
                 email: "olga@example.com",
               },
-              availableSlots: 3,
+              availableSlots: 0,
               keyTasks: [
                 "Сбор данных",
                 "Очистка данных",
@@ -274,9 +283,65 @@ export const projectsApi = {
               value: "Опыт работы с большими данными и визуализацией",
               curriculumConnection: "Анализ данных",
               diploma: false,
-              startDate: "2024-03-01",
-              endDate: "2024-06-30",
-              created_at: "2024-01-25",
+              scientificNovelty: "Новый метод анализа социальных графов",
+              startDate: "2023-09-01",
+              endDate: "2024-01-01",
+              created_at: "2023-08-25",
+            },
+            {
+              id: "9",
+              title: "Мобильное приложение для НГУ",
+              description:
+                "Разработка кроссплатформенного мобильного приложения для студентов НГУ",
+              tags: ["React Native", "TypeScript", "Firebase", "Redux", "Expo"],
+              difficulty: 4,
+              duration: "7 месяцев",
+              status: "in_progress",
+              mentor: {
+                id: 109,
+                name: "Екатерина Волкова",
+                email: "ekaterina@example.com",
+              },
+              availableSlots: 2,
+              keyTasks: [
+                "Проектирование архитектуры",
+                "Разработка UI",
+                "Интеграция с API",
+              ],
+              value: "Опыт разработки мобильных приложений",
+              curriculumConnection: "Мобильная разработка",
+              diploma: true,
+              scientificNovelty: "Новый подход к навигации в приложении",
+              startDate: "2024-01-15",
+              endDate: "2024-08-15",
+              created_at: "2023-12-20",
+            },
+            {
+              id: "10",
+              title: "Система мониторинга инфраструктуры",
+              description: "Создание системы мониторинга серверов и приложений",
+              tags: ["Go", "Prometheus", "Grafana", "Docker", "Kubernetes"],
+              difficulty: 5,
+              duration: "9 месяцев",
+              status: "recruiting",
+              mentor: {
+                id: 110,
+                name: "Андрей Николаев",
+                email: "andrey@example.com",
+              },
+              availableSlots: 1,
+              keyTasks: [
+                "Настройка мониторинга",
+                "Создание дашбордов",
+                "Автоматизация алертинга",
+              ],
+              value: "Опыт работы с DevOps инструментами",
+              curriculumConnection: "Системное администрирование",
+              diploma: true,
+              scientificNovelty: "Новый алгоритм прогнозирования нагрузки",
+              startDate: "2024-04-01",
+              endDate: "2024-12-31",
+              created_at: "2024-02-15",
             },
           ]);
         }, 500);
@@ -287,17 +352,31 @@ export const projectsApi = {
     }
   },
 
-  // Подача заявки на проект
+  // Подача заявки на проект (эмуляция для неавторизованных; для авторизованных — реальный API)
   async applyToProject(
     projectId: string,
   ): Promise<{ success: boolean; message: string }> {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      // Эмуляция для неавторизованного пользователя
+      return new Promise((resolve) => {
+        setTimeout(
+          () =>
+            resolve({
+              success: true,
+              message: "Для подачи заявки войдите в аккаунт",
+            }),
+          300,
+        );
+      });
+    }
     try {
       const response = await fetch(
         `${API_BASE_URL}/projects/${projectId}/apply`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         },

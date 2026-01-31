@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminApiService, Stats } from "../../../services/adminApi";
+import { adminApiService, Stats } from "../../../api/admin";
 import styles from "./Dashboard.module.css";
 
 const Dashboard = () => {

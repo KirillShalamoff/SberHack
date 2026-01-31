@@ -8,20 +8,20 @@ const Header = () => {
       <div className={styles.container}>
         <div className={styles.content}>
           <nav className={styles.nav}>
-            <Link to="/login" className={styles.navLinkActive}>
+            <Link to="/projects" className={styles.navLinkActive}>
               Каталог проектов
             </Link>
             <Link to="/login" className={styles.navLink}>
-              вход
+              Вход
             </Link>
-            <Link to="/registration" className={styles.navLink}>
+            <Link to="/register" className={styles.navLink}>
               Регистрация
             </Link>
             <Link to="/login" className={styles.navLink}>
               События
             </Link>
-            <Link to="/admine" className={styles.navLink}>
-              Админ
+            <Link to="/projects" className={styles.navLink}>
+              Проекты
             </Link>
           </nav>
         </div>

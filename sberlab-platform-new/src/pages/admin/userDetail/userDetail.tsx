@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./UserDetail.module.css";
-import adminApiService, { User } from "../../../services/adminApi";
+import adminApiService, { User } from "../../../api/admin";
 
 const UserDetail = () => {
   const { id } = useParams<{ id: string }>();

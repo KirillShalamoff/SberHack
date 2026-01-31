@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import styles from "./UsersList.module.css";
-import adminApiService, { User, UserFilters } from "../../../services/adminApi";
+import adminApiService, { User, UserFilters } from "../../../api/admin";
 
 const UsersList = () => {
   const [users, setUsers] = useState<User[]>([]);
